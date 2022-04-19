@@ -71,14 +71,14 @@ while getopts ":b:q:i:c:l:t:z:u:w:m:n:r:s:x:e:f:d:a:j:" opt; do
             ;;
         m)
           if [[ $OPTARG =~ ^[^-]+$ ]];then
-            mtrna=`realpath $OPTARG`
-            echo "--mrna = $mtrna"
+            mtgenes=`realpath $OPTARG`
+            echo "--mtgenes = $mtgenes"
           elif [[ $OPTARG =~ ^-. ]];then
-            mtrna=""
+            mtgenes=""
             let OPTIND=$OPTIND-1
           else
-            mrna=`realpath $OPTARG`
-            echo "--mrna = $mtrna"
+            mtgenes=`realpath $OPTARG`
+            echo "--mrna = $mtgenes"
           fi
             ;;
         n)
@@ -150,7 +150,7 @@ elif [[ tgcol -ne 2 ]]; then
 
 			if [[ $mtbuild == "TRUE" ]]; then
 			zless -S $tgMap | grep -v "#" | awk '$3=="transcript" && ($1=="M" || $1=="chrM" || $1=="MT")' | cut -f9 | tr -s ";" " " | awk '{print$2}' | sort | uniq | sed 's/\"//g' > "GTF_mtGenes.txt"
-			mtrna=GTF_mtGenes.txt
+			mtgenes=GTF_mtGenes.txt
 			fi
 
 			if [[ $rbuild == "TRUE" ]]; then
@@ -165,7 +165,7 @@ elif [[ tgcol -ne 2 ]]; then
 
 			if [[ $mtbuild == "TRUE" ]]; then
 			zless -S $tgMap | grep -v "#" | awk '$3=="transcript" && ($1=="M" || $1=="chrM" || $1=="MT")' | cut -f9 | tr -s ";" " " | awk '{print$2 "."  $4}' | sort | uniq | sed 's/\"//g' > "GTF_mtGenes.txt"
-			mtrna=GTF_mtGenes.txt
+			mtgenes=GTF_mtGenes.txt
 			fi
 
 			if [[ $rbuild == "TRUE" ]]; then
@@ -180,7 +180,7 @@ elif [[ tgcol -ne 2 ]]; then
 
 			if [[ $mtbuild == "TRUE" ]]; then
 			zless -S $tgMap | grep -v "#" | awk '$3=="transcript" && ($1=="M" || $1=="chrM" || $1=="MT")' | cut -f9 | tr -s ";" " " | awk '{print$2}' | awk 'BEGIN { OFS=FS="\t" } { sub("\\..*", "", $1); print }' | sort | uniq | sed 's/\"//g' > "GTF_mtGenes.txt"
-			mtrna=GTF_mtGenes.txt
+			mtgenes=GTF_mtGenes.txt
 			fi
 
 			if [[ $rbuild == "TRUE" ]]; then
@@ -195,7 +195,7 @@ elif [[ tgcol -ne 2 ]]; then
 
 			if [[ $mtbuild == "TRUE" ]]; then
 			zless -S $tgMap | grep -v "#" | awk '$3=="transcript" && ($1=="M" || $1=="chrM" || $1=="MT")' | cut -f9 | tr -s ";" " " | awk '{print$2}' | sort | uniq | sed 's/\"//g' > "GTF_mtGenes.txt"
-			mtrna=GTF_mtGenes.txt
+			mtgenes=GTF_mtGenes.txt
 			fi
 
 			if [[ $rbuild == "TRUE" ]]; then
@@ -209,7 +209,7 @@ elif [[ tgcol -ne 2 ]]; then
 
 			if [[ $mtbuild == "TRUE" ]]; then
 			zless -S $tgMap | grep -v "#" | awk '$3=="transcript" && ($1=="M" || $1=="chrM" || $1=="MT")' | cut -f9 | tr -s ";" " " | awk '{print$8}' | sort | uniq | sed 's/\"//g' > "GTF_mtGenes.txt"
-			mtrna=GTF_mtGenes.txt
+			mtgenes=GTF_mtGenes.txt
 			fi
 
 			if [[ $rbuild == "TRUE" ]]; then
@@ -224,7 +224,7 @@ elif [[ tgcol -ne 2 ]]; then
 
 			if [[ $mtbuild == "TRUE" ]]; then
 			zless -S $tgMap | grep -v "#" | awk '$3=="transcript" && ($1=="M" || $1=="chrM" || $1=="MT")' | cut -f9 | tr -s ";" " " | awk '{print$10}' | sort | uniq | sed 's/\"//g' > "GTF_mtGenes.txt"
-			mtrna=GTF_mtGenes.txt
+			mtgenes=GTF_mtGenes.txt
 			fi
 
 			if [[ $rbuild == "TRUE" ]]; then
@@ -254,13 +254,18 @@ params=()
 [[ $method == "celseq" ]] && params+=(--celseq)
 [[ $method == "celseq2" ]] && params+=(--celseq2)
 [[ $method == "quartzseq2" ]] && params+=(--quartzseq2)
+[[ $method == "sciseq3" ]] && params+=(--sciseq3)
+[[ $method == "indropV2" ]] && params+=(--indropV2)
+[[ $method == "splitSeqV1" ]] && params+=(--splitSeqV1)
+[[ $method == "splitSeqV2" ]] && params+=(--splitSeqV2)
 
 [[ $method == "rhapsody" ]] && params+=(--umi-geometry \'1[53-60]\')
 [[ $method == "rhapsody" ]] && params+=(--bc-geometry \'1[1-9,22-30,44-52]\')
 [[ $method == "rhapsody" ]] && params+=(--read-geometry \'2[1-end]\')
 
+
 [[ -e "$whitelist" ]] && params+=(--whitelist $whitelist)
-[[ -e "$mtrna" ]] && params+=(--mrna $mtrna)
+[[ -e "$mtgenes" ]] && params+=(--mrna $mtgenes)
 [[ -e "$rrna" ]] && params+=(--rrna $rrna)
 [[ $mtx == "TRUE" ]] && params+=(--dumpMtx)
 [[ $expect -gt "0" ]] && params+=(--expectCells $expect)
